@@ -1,11 +1,8 @@
 <template>
   <div class="card content-box-left" v-loading="state.loading">
-    <el-form ref="refForm" :model="state.form" :rules="rules" class="width-800" label-width="120px">
-      <el-form-item label="微信" prop="wxpay">
-        <el-switch v-model="state.form.wxpay" active-value="on" inactive-value="off" />
-      </el-form-item>
-      <el-form-item label="公户" prop="bank">
-        <el-switch v-model="state.form.bank" active-value="on" inactive-value="off" />
+    <el-form ref="refForm" :model="state.form" :rules="rules" class="width-800" label-width="80px">
+      <el-form-item label="录制须知" prop="video_text">
+        <el-input v-model="state.form.video_text" type="textarea" placeholder="录制须知" clearable :rows="8" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :loading="state.btnLoading" @click="onFormSubmit">确定</el-button>
@@ -17,25 +14,21 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
-import { shopPaySwitch } from "@/api/modules/config";
+import BigNumber from "bignumber.js";
+import { videoText } from "@/api/modules/config";
+
 const refForm = ref<FormInstance>();
 
 const state = reactive({
   loading: false,
   btnLoading: false,
   form: {
-    wxpay: "off",
-    bank: "off"
+    video_text: ""
   }
 })
 
 const rules = {
-  wxpay: [
-    { required: true, message: '请输入', trigger: ['blur', 'change'] }
-  ],
-  bank: [
-    { required: true, message: '请输入', trigger: ['blur', 'change'] }
-  ]
+  video_text: [ { required: true, message: '请输入', trigger: ['blur', 'change'] } ]
 }
 
 const onFormSubmit = () => {
@@ -43,7 +36,7 @@ const onFormSubmit = () => {
     if (!valid) return;
     try {
       state.btnLoading = true;
-      shopPaySwitch({ method: 'put', params: { switch: state.form } })
+      videoText({ method: 'put', params: state.form })
         .then(({ msg }) => {
           ElMessage.success({ message: msg });
         })
@@ -58,9 +51,10 @@ const onFormSubmit = () => {
 
 onMounted(() => {
   state.loading = true;
-  shopPaySwitch({ method: 'get' })
+  videoText({ method: 'get' })
     .then((response: any) => {
-      state.form = response.data?.value;
+      const data = response.data?.value;
+      state.form.video_text = data;
     })
     .finally(() => {
       state.loading = false;

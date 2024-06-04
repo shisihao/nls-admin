@@ -109,15 +109,21 @@ const proTable = ref<ProTableInstance>();
 const state = reactive({
   downloadLoading: false,
   search: {
-    account: '',
-    user_name: '',
-    cer_name: '',
-    status: ''
+    status: '',
+    phone: '',
+    name: '',
+    company_name: '',
+    company_code: '',
+    start_time: '',
+    end_time: ''
   }
 })
 
 const getTableList = (params: any) => {
   let newParams = JSON.parse(JSON.stringify(params));
+  newParams.created_at && (newParams.start_time = newParams.created_at[0]);
+  newParams.created_at && (newParams.end_time = newParams.created_at[1]);
+  delete newParams.created_at;
   state.search = newParams;
   return getList(newParams);
 }
@@ -127,24 +133,32 @@ const columns: ColumnProps[] = [
     search: {
       el: 'input',
       label: '手机号',
-      key: 'account',
+      key: 'phone',
       props: { placeholder: '请输入 手机号' }
     }
   },
   { prop: "user", label: "账号", minWidth: 160, align: "left",
     search: {
       el: 'input',
-      label: '昵称',
-      key: 'user_name',
-      props: { placeholder: '请输入 昵称' }
+      label: '姓名',
+      key: 'name',
+      props: { placeholder: '请输入 姓名' }
     }
   },
   { prop: "certification", label: "认证信息", minWidth: 160, align: "left",
     search: {
       el: 'input',
-      label: '认证姓名',
-      key: 'cer_name',
-      props: { placeholder: '请输入 认证姓名' }
+      label: '公司名称',
+      key: 'company_name',
+      props: { placeholder: '请输入 公司名称' }
+    }
+  },
+  { prop: "company_code", label: "", width: 0, align: "left",
+    search: {
+      el: 'input',
+      label: '统一社会信用代码',
+      key: 'company_code',
+      props: { placeholder: '请输入 统一社会信用代码' }
     }
   },
   { prop: "status", label: "审核状态", width: 80,
@@ -158,7 +172,13 @@ const columns: ColumnProps[] = [
     },
     enum: statusOptions
   },
-  { prop: "created_at", label: "创建时间", width: 160 },
+  { prop: "created_at", label: "创建时间", width: 160,
+    search: {
+      el: "date-picker",
+      props: { type: "datetimerange", valueFormat: "YYYY-MM-DD HH:mm:ss", clearable: true },
+      defaultValue: []
+    }
+  },
   { prop: "operation", label: "操作", fixed: "right", width: 160 }
 ];
 

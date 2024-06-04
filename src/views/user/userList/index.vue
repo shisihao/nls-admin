@@ -52,6 +52,7 @@
       <!-- 表格操作 -->
       <template #operation="{ row }">
         <el-button type="primary" link :icon="EditPen" @click="onAddOrUpdate(row)"> 编辑 </el-button>
+        <el-button type="danger" link :icon="Delete" @click="onDelete(row)"> 删除 </el-button>
       </template>
     </ProTable>
 
@@ -63,9 +64,9 @@
 import { reactive, ref } from "vue";
 import { ElMessage } from 'element-plus'
 import ProTable from "@/components/ProTable/index.vue";
-import { getList, addOrUpdate, exportUser } from '@/api/modules/user';
+import { getList, addOrUpdate, exportUser, deleteData } from '@/api/modules/user';
 import { ProTableInstance, ColumnProps } from "@/components/ProTable/interface";
-import { CirclePlus, Download, EditPen } from "@element-plus/icons-vue";
+import { CirclePlus, Download, EditPen, Delete } from "@element-plus/icons-vue";
 import { isStatusOptions, userTypeOptions } from '@/utils/serviceDict';
 import { paraphrase } from '@/utils/filter';
 import Avatar from "@/components/Picture/Avatar.vue";
@@ -172,16 +173,24 @@ const onAddOrUpdate = (row?: any) => {
   refAddOrUpdate.value?.init(row)
 }
 
-// 团队
-const refSubset = ref<InstanceType<typeof Subset> | null>(null);
-const onSubset = (row?: any) => {
-  refSubset.value?.init(row)
-}
-
-// 流水
-const refWallet = ref<InstanceType<typeof Wallet> | null>(null);
-const onWallet = (row?: any) => {
-  refWallet.value?.init(row)
+// 删除
+const onDelete = (row: any) => {
+  const { name , id } = row
+  ElMessageBox.confirm(`确定对[${name}(#${id})]进行[删除]操作?`, '删除', {
+    autofocus: false,
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'error'
+  })
+    .then(() => {
+      deleteData(id)
+        .then(({ msg = '删除成功' }) => {
+          ElMessage.success({ message: msg });
+          refreshList()
+        })
+        .catch(() => {})
+    })
+    .catch(() => {})
 }
 
 // 导出

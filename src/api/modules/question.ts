@@ -3,17 +3,12 @@ import http from "@/api";
 
 // 获取列表
 export const getList = (params: any) => {
-  return http.get(PORT1 + `/ads`, params);
-};
-
-// 广告位列表
-export const posList = (params: any) => {
-  return http.get(PORT1 + `/ads/pos`, params);
+  return http.get(PORT1 + `/questions`, params);
 };
 
 // 添加 / 修改
 export const addOrUpdate =  ({ id, ...params } : { id: number, params: any}) => {
-  let url = '/ads'
+  let url = '/questions'
   if (id > 0) {
     url = `${url}/${id}`;
     return http.put(PORT1 + url, params);
@@ -23,5 +18,5 @@ export const addOrUpdate =  ({ id, ...params } : { id: number, params: any}) => 
 
 // 删除
 export const deleteData = (id: number) => {
-  return http.delete(PORT1 + `/ads/${id}`);
+  return http.delete(PORT1 + `/questions/${id}`);
 };
