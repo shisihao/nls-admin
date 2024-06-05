@@ -69,8 +69,11 @@ const treeAllData = ref<{ [key: string]: any }[]>([]);
 
 const selected = ref();
 const setSelected = () => {
-  if (props.multiple) selected.value = Array.isArray(props.defaultValue) ? props.defaultValue : [props.defaultValue];
-  else selected.value = typeof props.defaultValue === "string" ? props.defaultValue : "";
+  if (props.multiple) {
+    selected.value = Array.isArray(props.defaultValue) ? props.defaultValue : [props.defaultValue];
+  } else {
+    selected.value = typeof props.defaultValue === "string" ||  typeof props.defaultValue === "number" ? props.defaultValue : "";
+  }
 };
 
 onBeforeMount(async () => {

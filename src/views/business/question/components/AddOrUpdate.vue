@@ -9,8 +9,13 @@
   >
     <div v-if="state.defaultLoading">
       <el-form ref="refForm" :model="state.form" :rules="rules" label-width="100px">
+        <el-form-item label="类型" prop="type">
+          <el-radio-group v-model="state.form.type">
+            <el-radio v-for="(item, index) in userTypeOptions.slice(1)" :key="index" :value="item.value">{{ item.label }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="问题" prop="ask">
-          <el-input v-model="state.form.ask" type="textarea" :rows="3" placeholder="请输入问题" clearable />
+          <el-input v-model="state.form.ask" type="textarea" :rows="6" placeholder="请输入问题" clearable />
         </el-form-item>
         <el-form-item label="回答" prop="answers">
           <div>
@@ -49,7 +54,7 @@
         <el-form-item label="排序" prop="sort">
           <el-input-number v-model="state.form.sort" :min="0" :precision="0" placeholder="排序" />
           <div style="width: 100%;">
-            <el-text type="info">注意：越小越靠前</el-text>
+            <el-text type="info">注意：越大越靠前</el-text>
           </div>
         </el-form-item>
       </el-form>
@@ -66,6 +71,7 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
+import { userTypeOptions } from '@/utils/serviceDict';
 import { addOrUpdate } from '@/api/modules/question';
 
 const refForm = ref<FormInstance>();

@@ -6,7 +6,7 @@
           <div class="card-panel-description">
             <div class="card-panel-text">用户数</div>
             <el-space direction="vertical" alignment="left">
-              <el-statistic title="昨日新增" :value="state.panel.user.total" />
+              <el-statistic title="用户总数" :value="state.panel.user.total" />
               <div style="height: 112px;"></div>
             </el-space>
           </div>
@@ -17,9 +17,9 @@
           <div class="card-panel-description">
             <div class="card-panel-text">认证</div>
             <el-space direction="vertical" alignment="left">
-              <el-statistic title="认证中" :precision="2" :value="state.panel.cert.wait" />
-              <el-statistic title="认证通过" :precision="2" :value="state.panel.cert.success" />
-              <el-statistic title="认证驳回" :precision="2" :value="state.panel.cert.fail" />
+              <el-statistic title="认证中" :precision="0" :value="state.panel.cert.wait" />
+              <el-statistic title="认证通过" :precision="0" :value="state.panel.cert.success" />
+              <el-statistic title="认证驳回" :precision="0" :value="state.panel.cert.fail" />
             </el-space>
           </div>
         </div>

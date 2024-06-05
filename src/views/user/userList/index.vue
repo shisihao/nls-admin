@@ -9,7 +9,7 @@
       <!-- 表格 header 按钮 -->
       <template #tableHeader>
         <el-button type="primary" :icon="CirclePlus" @click="onAddOrUpdate()"> 新增 </el-button>
-        <el-button type="success" plain :icon="Download" :loading="state.downloadLoading" @click="onExportData"> 导出数据 </el-button>
+        <!-- <el-button type="success" plain :icon="Download" :loading="state.downloadLoading" @click="onExportData"> 导出数据 </el-button> -->
       </template>
 
       <!-- 表格 主体内容展示 -->
@@ -49,10 +49,65 @@
       <template #level="{ row }">
         {{ row.level }}
       </template>
+      <template #status="{ row }">
+        <div v-if="row.status === 2">
+          <el-popover
+              placement="top"
+              width="200"
+              trigger="hover"
+            >
+            <div>
+              {{ row.reason }}
+            </div>
+            <template #reference>
+              <el-text :type="paraphrase({ value: row.status, options: statusOptions, l: 'type' })">
+                {{ paraphrase({ value: row.status, options: statusOptions }) }}<el-icon><QuestionFilled /></el-icon>
+              </el-text>
+            </template>
+          </el-popover>
+        </div>
+        <el-text v-else :type="paraphrase({ value: row.status, options: statusOptions, l: 'type' })">
+          {{ paraphrase({ value: row.status, options: statusOptions }) }}
+        </el-text>
+
+        <div v-if="row.admin">
+          <el-popover
+            placement="top"
+            width="200"
+            trigger="hover"
+          >
+            <div>
+              <div>
+                # {{ row.admin.id }}
+              </div>
+              <div>
+                {{ row.admin.name }}
+              </div>
+            </div>
+            <template #reference>
+              <el-text>审核人<el-icon><QuestionFilled /></el-icon></el-text>
+            </template>
+          </el-popover>
+        </div>
+      </template>
+      <template #video_url="{ row }">
+        <div v-if="row.video_url">
+          <VideoPopup :image-url="''" :video-url="row.video_url" />
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
       <!-- 表格操作 -->
       <template #operation="{ row }">
-        <el-button type="primary" link :icon="EditPen" @click="onAddOrUpdate(row)"> 编辑 </el-button>
-        <el-button type="danger" link :icon="Delete" @click="onDelete(row)"> 删除 </el-button>
+        <div>
+          <el-button type="primary" link :icon="EditPen" @click="onAddOrUpdate(row)"> 编辑 </el-button>
+          <el-button type="danger" link :icon="Delete" @click="onDelete(row)"> 删除 </el-button>
+        </div>
+        <div v-if="row.status === 0">
+          <el-button type="primary" link :icon="Select" @click="onAuditStatus(row, 1)"> 通过 </el-button>
+          <el-button type="danger" link :icon="CloseBold" @click="onAuditStatus(row, 2)"> 驳回 </el-button>
+        </div>
       </template>
     </ProTable>
 
@@ -62,15 +117,25 @@
 
 <script setup lang="tsx" name="user">
 import { reactive, ref } from "vue";
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import ProTable from "@/components/ProTable/index.vue";
-import { getList, addOrUpdate, exportUser, deleteData } from '@/api/modules/user';
+import { storeToRefs } from "pinia";
+import { useUserStore } from "@/stores/modules/user";
+import { getList, addOrUpdate, exportUser, deleteData, auditStatus } from '@/api/modules/user';
 import { ProTableInstance, ColumnProps } from "@/components/ProTable/interface";
-import { CirclePlus, Download, EditPen, Delete } from "@element-plus/icons-vue";
-import { isStatusOptions, userTypeOptions } from '@/utils/serviceDict';
+import { CirclePlus, Download, EditPen, Delete, Select, CloseBold } from "@element-plus/icons-vue";
+import { isStatusOptions, userTypeOptions, statusOptions, classType } from '@/utils/serviceDict';
 import { paraphrase } from '@/utils/filter';
 import Avatar from "@/components/Picture/Avatar.vue";
 import AddOrUpdate from "./components/AddOrUpdate.vue";
+
+const statusOptionsFilter = statusOptions
+if (statusOptionsFilter.find(item => item.value === -1) === undefined) {
+  statusOptionsFilter.splice( 1, 0, { label: '未提交', value: -1, type: 'info' })
+}
+
+const userStore = useUserStore()
+const { oss }: { oss: any } = storeToRefs(userStore)
 
 const proTable = ref<ProTableInstance>();
 
@@ -139,6 +204,19 @@ const columns: ColumnProps[] = [
     },
     enum: userTypeOptions
   },
+  { prop: "video_url", label: "视频地址", width: 160 },
+  { prop: "cert_result", label: "认证结果", width: 160 },
+  { prop: "status", label: "审核状态", width: 80,
+    search: {
+      el: "select",
+      label: '审核状态',
+      defaultValue: '',
+      props: {
+        clearable: true
+      }
+    },
+    enum: statusOptionsFilter
+  },
   { prop: "created_at", label: "创建时间", width: 160,
     // search: {
     //   el: "date-picker",
@@ -203,6 +281,46 @@ const onExportData = () => {
     .finally(() => {
       state.downloadLoading = false;
     })
+}
+
+const onAuditStatus = (row: any, status: number) => {
+  const { name, id } = row;
+  const typeText = status == 1 ? '通过' : '驳回';
+  const type = status == 1 ? 'success' : 'error';
+  let msgBox:Promise<{ value?: string | undefined }>;
+  if (status === 1) {
+    msgBox = ElMessageBox.confirm(`确定对[(#${id})${name}]进行[${typeText}]操作?`, '提示', {
+      autofocus: false,
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: type
+    })
+  } else {
+    msgBox = ElMessageBox.prompt(`确定对[(#${id})${name}]进行[${typeText}]操作?请输入${typeText}理由`, '提示', {
+      inputPattern: /\S/,
+      inputErrorMessage: '不能为空',
+    })
+  }
+  msgBox
+    .then(({ value }) => {
+      const data:any = { id, status };
+      if (status === 2) {
+        data.reason = value ? value.trim() : '';
+      }
+      auditStatus(data)
+        .then(({ msg = `已${typeText}` }) => {
+          ElMessage.success({ message: msg });
+          refreshList()
+        })
+        .catch(() => {})
+    })
+    .catch(() => {})
+}
+
+const onLook = (row:{ video_url:string }) => {
+  let url = `${oss.value.DoMain}${row.resource_url}`;
+  url = 'http://view.officeapps.live.com/op/view.aspx?src=' + url;
+  window.open(url);
 }
 </script>
 

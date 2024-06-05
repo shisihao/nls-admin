@@ -7,9 +7,9 @@
       :request-api="getTableList"
     >
       <!-- 表格 header 按钮 -->
-      <template #tableHeader>
+      <!-- <template #tableHeader>
         <el-button type="success" plain :icon="Download" :loading="state.downloadLoading" @click="onExportData"> 导出数据 </el-button>
-      </template>
+      </template> -->
 
       <!-- 表格 主体内容展示 -->
       <template #user="{ row }">

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="video-player">
-      <Pic :is-domain="true" :src="imageUrl" />
-      <div class="play flx-center"  @click="onShowVideoPopup"><el-icon><VideoPlay /></el-icon></div>
+      <Pic :is-domain="isDomain" :src="imageUrl" />
+      <div class="play flx-center" @click="onShowVideoPopup"><el-icon><VideoPlay /></el-icon></div>
     </div>
     <el-dialog
       v-model="state.visible"

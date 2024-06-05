@@ -25,3 +25,15 @@ export const deleteData = (id: number) => {
 export const exportUser = (params: any) => {
   return http.get(PORT1 + `/users/export/info`, params);
 }
+
+/**
+ * 审核
+ * @param {number} id 
+ * @param {number} status 
+ * @param {string} reason 
+ * @returns 
+ */
+export const auditStatus = ({ id, ...params}:{ id:number, params:any }) => {
+  return http.put(PORT1 + `/users/audit/${id}`, params);
+}
+
