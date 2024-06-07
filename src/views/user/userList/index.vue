@@ -128,6 +128,7 @@ import { isStatusOptions, userTypeOptions, statusOptions, classType } from '@/ut
 import { paraphrase } from '@/utils/filter';
 import Avatar from "@/components/Picture/Avatar.vue";
 import AddOrUpdate from "./components/AddOrUpdate.vue";
+import VideoPopup from "@/components/MediaPopup/VideoPopup.vue";
 
 const statusOptionsFilter = statusOptions
 if (statusOptionsFilter.find(item => item.value === -1) === undefined) {

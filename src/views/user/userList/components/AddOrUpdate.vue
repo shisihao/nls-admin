@@ -60,7 +60,7 @@ const getInitialData = () => ({
   visible: false,
   loading: false,
   btnLoading: false,
-  defaultLoading: true,
+  defaultLoading: false,
   form: {
     id: 0,
     type: 0,
@@ -129,6 +129,7 @@ const rules = ref({
 
 const init = (row: any) => {
   state.visible = true;
+  state.defaultLoading = true;
   if (row) {
     state.form = JSON.parse(JSON.stringify(row));
   }
