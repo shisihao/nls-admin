@@ -1,8 +1,8 @@
 <template>
   <div class="card content-box-left" v-loading="state.loading">
-    <el-form ref="refForm" :model="state.form" :rules="rules" class="width-800" label-width="80px">
+    <el-form ref="refForm" :model="state.form" :rules="rules" label-width="80px">
       <el-form-item label="录制须知" prop="video_text">
-        <el-input v-model="state.form.video_text" type="textarea" placeholder="录制须知" clearable :rows="8" />
+        <WangEditor v-model:value="state.form.video_text" :hide-tool-bar="true" height="400px" style="width:1000px;" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :loading="state.btnLoading" @click="onFormSubmit">确定</el-button>
@@ -16,6 +16,7 @@ import { reactive, ref, onMounted } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
 import BigNumber from "bignumber.js";
 import { videoText } from "@/api/modules/config";
+import WangEditor from "@/components/WangEditor/index.vue";
 
 const refForm = ref<FormInstance>();
 
