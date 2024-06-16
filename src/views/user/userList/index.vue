@@ -27,8 +27,11 @@
               </span>
             </div>
             <div>
-              {{ row.phone || row.email }}
+              <span>{{ row.phone || row.email }}</span>
+              <el-divider direction="vertical" />
+              <span>{{ row.level }}</span>
             </div>
+            
           </el-space>
         </el-space>
       </template>
@@ -46,9 +49,53 @@
           -
         </div>
       </template>
-      <template #level="{ row }">
-        {{ row.level }}
+      <template #video_url="{ row }">
+        <div v-if="row.video_url">
+          <VideoPopup :image-url="''" :video-url="row.video_url" />
+        </div>
+        <div v-else>
+          --
+        </div>
       </template>
+      <template #cert_result_image="{ row }">
+        <div v-if="row.cert_result?.image">
+          <Pic width="60px" height="60px" :is-domain="true" :src="row.cert_result?.image" />
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
+      <template #cert_result_video="{ row }">
+        <div v-if="row.cert_result?.video">
+          <VideoPopup :image-url="''" :video-url="row.cert_result?.video" />
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
+      <template #cert_result_text="{ row }">
+        <div v-if="row.cert_status == 1">
+          <el-text type="success"> 成功 </el-text>
+        </div>
+        <div v-else-if="row.cert_status == 2">
+          <el-popover
+            placement="top"
+            width="200"
+            trigger="hover"
+          >
+            <div>
+              {{ row.cert_result?.error }}
+            </div>
+            <template #reference>
+              <el-text type="error">失败<el-icon><QuestionFilled /></el-icon></el-text>
+            </template>
+          </el-popover>
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
+
       <template #status="{ row }">
         <div v-if="row.status === 2">
           <el-popover
@@ -90,27 +137,6 @@
           </el-popover>
         </div>
       </template>
-      <template #video_url="{ row }">
-        <div v-if="row.video_url">
-          <VideoPopup :image-url="''" :video-url="row.video_url" />
-        </div>
-        <div v-else>
-          --
-        </div>
-      </template>
-      <template #cert_result="{ row }">
-        <div v-if="row.cert_result">
-          <div v-if="row.cert_result?.error">
-            {{ row.cert_result?.error }}
-          </div>
-          <div v-else>
-            <VideoPopup :image-url="row.cert_result?.image" :video-url="row.cert_result?.video" />
-          </div>
-        </div>
-        <div v-else>
-          --
-        </div>
-      </template>
       <!-- 表格操作 -->
       <template #operation="{ row }">
         <div>
@@ -142,6 +168,7 @@ import { paraphrase } from '@/utils/filter';
 import Avatar from "@/components/Picture/Avatar.vue";
 import AddOrUpdate from "./components/AddOrUpdate.vue";
 import VideoPopup from "@/components/MediaPopup/VideoPopup.vue";
+import Pic from "@/components/Picture/Pic.vue";
 
 const statusOptionsFilter = statusOptions
 if (statusOptionsFilter.find(item => item.value === -1) === undefined) {
@@ -206,7 +233,7 @@ const columns: ColumnProps[] = [
       props: { placeholder: '请输入 公司名称' }
     }
   },
-  { prop: "level", label: "风险等级", minWidth: 160, align: "left",
+  { prop: "video_url", label: "问答视频", width: 100,
     search: {
       el: "select",
       key: 'type',
@@ -218,8 +245,9 @@ const columns: ColumnProps[] = [
     },
     enum: userTypeOptions
   },
-  { prop: "video_url", label: "视频地址", width: 160 },
-  { prop: "cert_result", label: "认证结果", width: 160 },
+  { prop: "cert_result_image", label: "人脸认证图片", width: 120 },
+  { prop: "cert_result_video", label: "人脸认证视频", width: 120 },
+  { prop: "cert_result_text", label: "人脸认证状态", width: 120 },
   { prop: "status", label: "审核状态", width: 80,
     search: {
       el: "select",
