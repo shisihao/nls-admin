@@ -48,7 +48,7 @@
         <el-form-item label="回答限时(秒)" prop="seconds">
           <el-input-number v-model="state.form.seconds" :min="0" :precision="0" placeholder="回答限时" />
           <div style="width: 100%;">
-            <el-text type="info">注意：默认为3秒</el-text>
+            <el-text type="info">注意：默认为5秒</el-text>
           </div>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
@@ -86,7 +86,7 @@ const getInitialData = () => ({
     id: 0,
     type: 0,
     ask: "",
-    seconds: 3,
+    seconds: 5,
     answers: [],
     sort: 0
   }

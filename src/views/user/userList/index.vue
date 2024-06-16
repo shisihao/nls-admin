@@ -98,6 +98,19 @@
           --
         </div>
       </template>
+      <template #cert_result="{ row }">
+        <div v-if="row.cert_result">
+          <div v-if="row.cert_result?.error">
+            {{ row.cert_result?.error }}
+          </div>
+          <div v-else>
+            <VideoPopup :image-url="row.cert_result?.image" :video-url="row.cert_result?.video" />
+          </div>
+        </div>
+        <div v-else>
+          --
+        </div>
+      </template>
       <!-- 表格操作 -->
       <template #operation="{ row }">
         <div>
@@ -162,14 +175,14 @@ const getTableList = (params: any) => {
 
 const columns: ColumnProps[] = [
   { prop: "id", label: "#", width: 80 },
-  { prop: "user", label: "手机号", minWidth: 160, align: "left",
+  { prop: "user", label: "手机号", minWidth: 260, align: "left",
     search: {
       el: 'input',
       key: 'keywords',
       props: { placeholder: '请输入 手机号' }
     }
   },
-  { prop: "type", label: "类型", width: 100, align: "center",
+  { prop: "type", label: "类型", width: 80, align: "center",
     search: {
       el: 'input',
       label: '姓名',
