@@ -29,6 +29,9 @@
         <el-form-item label="产品名称" prop="product">
           <el-input v-model="state.form.product" placeholder="请输入" clearable />
         </el-form-item>
+        <el-form-item label="产品风险等级" prop="product_level">
+          <el-input v-model="state.form.product_level" placeholder="请输入" clearable />
+        </el-form-item>
         <el-form-item v-if="state.form.type === 1" label="公司名称" prop="company_name">
           <el-input v-model="state.form.company_name" placeholder="请输入" clearable />
         </el-form-item>
@@ -69,6 +72,7 @@ const getInitialData = () => ({
     id_card: '',
     level: '',
     product: '',
+    product_level: '',
     company_name: '',
     company_code: ''
   }
@@ -117,6 +121,9 @@ const rules = ref({
     { required: true, message: '不能为空', trigger: ['blur', 'change'] }
   ],
   product: [
+    { required: true, message: '不能为空', trigger: ['blur', 'change'] }
+  ],
+  product_level: [
     { required: true, message: '不能为空', trigger: ['blur', 'change'] }
   ],
   company_name: [

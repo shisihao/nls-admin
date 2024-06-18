@@ -31,7 +31,6 @@
               <el-divider direction="vertical" />
               <span>{{ row.level }}</span>
             </div>
-            
           </el-space>
         </el-space>
       </template>
@@ -48,6 +47,10 @@
         <div v-else>
           -
         </div>
+      </template>
+      <template #product="{ row }">
+        <div>{{ row.product }}</div>
+        <div>{{ row.product_level }}</div>
       </template>
       <template #video_url="{ row }">
         <div v-if="row.video_url">
@@ -87,7 +90,7 @@
               {{ row.cert_result?.error }}
             </div>
             <template #reference>
-              <el-text type="error">失败<el-icon><QuestionFilled /></el-icon></el-text>
+              <el-text type="danger">失败<el-icon><QuestionFilled /></el-icon></el-text>
             </template>
           </el-popover>
         </div>
@@ -225,7 +228,7 @@ const columns: ColumnProps[] = [
       props: { placeholder: '请输入 公司名称' }
     }
   },
-  { prop: "product", label: "产品信息", minWidth: 160, align: "left",
+  { prop: "product", label: "产品名称/风险等级", minWidth: 160, align: "left",
     search: {
       el: 'input',
       label: '统一社会信用代码',
